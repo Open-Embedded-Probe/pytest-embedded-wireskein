@@ -4,12 +4,12 @@
 
 A [pytest-embedded](https://github.com/espressif/pytest-embedded) plugin that gives each test a [WireSkein](https://github.com/Open-Embedded-Probe/wireskein) recorder, `ws_run`. The test records the commands it sent, the logic-analyzer captures, and what each step should look like on the wire. When the test body ends, the plugin checks the captures against these expectations and fails the test if a check fails.
 
-Status: **beta** (`0.1.0b1`).
+Status: **beta**.
 
 ## Install
 
 ```sh
-pip install --pre pytest-embedded-wireskein
+pip install pytest-embedded-wireskein
 ```
 
 Python 3.13 or newer. This installs `wireskein` and `pytest-embedded`.
@@ -83,11 +83,9 @@ uv sync
 uv run pytest
 ```
 
-Until `wireskein` is on PyPI, `pyproject.toml` points uv at the sibling checkout `../wireskein`.
-
 ## Release
 
-The release works the same way as in [pytest-embedded-arduino-cli](https://github.com/tanakamasayuki/pytest-embedded-arduino-cli#release). Update `## Unreleased` in `CHANGELOG.md`, then run the `Release` workflow with the version (for example `0.1.0b1`). PyPI publishing uses Trusted Publishing.
+The release works the same way as in [pytest-embedded-arduino-cli](https://github.com/tanakamasayuki/pytest-embedded-arduino-cli#release). Update `## Unreleased` in `CHANGELOG.md`, then run the `Release` workflow with the version (for example `0.0.2`). PyPI publishing uses Trusted Publishing.
 
 ## License
 

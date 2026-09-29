@@ -8,12 +8,12 @@
 - test の本体が終わると、プラグインがキャプチャを期待と照らし合わせます。
 - 検査が NG なら、その test を失敗にします。
 
-状態: **β 版**（`0.1.0b1`）です。
+状態: **β 版**です。
 
 ## 入れ方
 
 ```sh
-pip install --pre pytest-embedded-wireskein
+pip install pytest-embedded-wireskein
 ```
 
 Python 3.13 以上が要ります。`wireskein` と `pytest-embedded` も一緒に入ります。
@@ -92,11 +92,9 @@ uv sync
 uv run pytest
 ```
 
-`wireskein` が PyPI に出るまでは、`pyproject.toml` で隣の `../wireskein` を使うよう uv に指定しています。
-
 ## リリース
 
-[pytest-embedded-arduino-cli](https://github.com/tanakamasayuki/pytest-embedded-arduino-cli/blob/main/README.ja.md) と同じ手順です。`CHANGELOG.md` の `## Unreleased` を更新し、`Release` の workflow を版（例 `0.1.0b1`）を入れて実行します。PyPI への公開は Trusted Publishing で行います。
+[pytest-embedded-arduino-cli](https://github.com/tanakamasayuki/pytest-embedded-arduino-cli/blob/main/README.ja.md) と同じ手順です。`CHANGELOG.md` の `## Unreleased` を更新し、`Release` の workflow を版（例 `0.0.2`）を入れて実行します。PyPI への公開は Trusted Publishing で行います。
 
 ## ライセンス
 
