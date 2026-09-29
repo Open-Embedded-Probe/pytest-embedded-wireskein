@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "pytest-embedded-wireskein"
-version = "0.1.0b1"
+version = "0.0.1"
 description = "pytest-embedded plugin: record logic-analyzer captures per test with WireSkein and fail the test when a waveform check fails"
 readme = "README.md"
 license = "MIT"
@@ -21,7 +21,7 @@ classifiers = [
 dependencies = [
   "pytest>=8",
   "pytest-embedded>=2.0",
-  "wireskein>=0.1.0b1",
+  "wireskein>=0.0.1",
 ]
 
 [project.entry-points.pytest11]
@@ -46,8 +46,3 @@ filterwarnings = [
 
 [dependency-groups]
 dev = ["pytest>=8"]
-
-# Local development against the sibling checkout. Remove once wireskein is on
-# PyPI (CI resolves wireskein from PyPI).
-[tool.uv.sources]
-wireskein = { path = "../wireskein", editable = true }
