@@ -1,0 +1,53 @@
+[build-system]
+requires = ["hatchling>=1.27"]
+build-backend = "hatchling.build"
+
+[project]
+name = "pytest-embedded-wireskein"
+version = "0.1.0b1"
+description = "pytest-embedded plugin: record logic-analyzer captures per test with WireSkein and fail the test when a waveform check fails"
+readme = "README.md"
+license = "MIT"
+requires-python = ">=3.13"
+authors = [
+  { name = "TANAKA Masayuki" },
+]
+classifiers = [
+  "Development Status :: 4 - Beta",
+  "Framework :: Pytest",
+  "Programming Language :: Python :: 3",
+  "Topic :: Software Development :: Testing",
+]
+dependencies = [
+  "pytest>=8",
+  "pytest-embedded>=2.0",
+  "wireskein>=0.1.0b1",
+]
+
+[project.entry-points.pytest11]
+embedded-wireskein = "pytest_embedded_wireskein.plugin"
+
+[project.urls]
+Homepage = "https://github.com/Open-Embedded-Probe/pytest-embedded-wireskein"
+Repository = "https://github.com/Open-Embedded-Probe/pytest-embedded-wireskein"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/pytest_embedded_wireskein"]
+
+[tool.hatch.build.targets.sdist]
+only-include = ["src/pytest_embedded_wireskein", "tests", "README.md", "README.ja.md", "CHANGELOG.md", "LICENSE", "pyproject.toml"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-p pytester"
+filterwarnings = [
+    "ignore:record_xml_attribute is an experimental feature:pytest.PytestExperimentalApiWarning",
+]
+
+[dependency-groups]
+dev = ["pytest>=8"]
+
+# Local development against the sibling checkout. Remove once wireskein is on
+# PyPI (CI resolves wireskein from PyPI).
+[tool.uv.sources]
+wireskein = { path = "../wireskein", editable = true }
