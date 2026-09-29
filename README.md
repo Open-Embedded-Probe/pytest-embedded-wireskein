@@ -1,0 +1,94 @@
+# pytest-embedded-wireskein
+
+[日本語 README](https://github.com/Open-Embedded-Probe/pytest-embedded-wireskein/blob/main/README.ja.md)
+
+A [pytest-embedded](https://github.com/espressif/pytest-embedded) plugin that gives each test a [WireSkein](https://github.com/Open-Embedded-Probe/wireskein) recorder, `ws_run`. The test records the commands it sent, the logic-analyzer captures, and what each step should look like on the wire. When the test body ends, the plugin checks the captures against these expectations and fails the test if a check fails.
+
+Status: **beta** (`0.1.0b1`).
+
+## Install
+
+```sh
+pip install --pre pytest-embedded-wireskein
+```
+
+Python 3.13 or newer. This installs `wireskein` and `pytest-embedded`.
+
+## Use
+
+```python
+from wireskein.runlog import square, level, only_moving
+
+def test_pwm(dut, ws_run, probe):              # `probe` is whatever drives your logic analyzer
+    with ws_run.section(1, "pwm"):
+        for duty in (64, 128, 0):
+            want = [square("PA1", 1000, duty / 255), only_moving(["PA1"])] if duty else [level("PA1", 0)]
+            with ws_run.section(2, f"duty={duty}", expect=want):
+                ws_run.command(f"PWM {duty}")
+                dut.write(f"PWM {duty}")
+                ws_run.reply(dut.expect(r"PWM duty=\d+").group(0).decode())
+                t = ws_run.armed()               # right after arming the capture
+                data, rate = probe.capture()     # bytes, one sample per byte, bit k = pin k
+                ws_run.capture(data, rate, ["PA1", "PA0"], t)
+```
+
+When `test_pwm` returns, the plugin closes the run and verifies it. If a check fails, the test fails in its call phase (FAILED, not ERROR):
+
+```text
+FAILED test_pwm.py::test_pwm - wireskein: 1 NG (5 ok, 1 ng, 0 unchecked (4 segments, 3 captures))
+NG  pwm/duty=128  square  c0002.bin  duty 0.6999 vs 0.5020
+report: /tmp/pytest-embedded/2026-09-29_12-00-00-000000/test_pwm/wireskein/report.json
+```
+
+The checks (`square`, `level`, `starts`, `ends`, `only_moving`, `pulses`, `i2c`, `spi`, `uart`) and the heading rules are described in the [WireSkein README](https://github.com/Open-Embedded-Probe/wireskein#checking-a-test-run).
+
+### Where the run is written
+
+`ws_run` writes to `<test_case_tempdir>/wireskein/`, next to pytest-embedded's `dut.log`: `<root-logdir>/pytest-embedded/<time>/<test name>/wireskein/`.
+
+| File | Content |
+| --- | --- |
+| `run.json` | Headings, commands, replies, notes, captures and expectations (WireSkein run format) |
+| `c0001.bin`, ... | The captures |
+| `report.json` | Every result with measured values, and the log |
+| `report.xml` | The results as JUnit XML |
+
+The same directory can be checked again later with `wireskein verify <dir>`. The test's `user_properties` carry `wireskein_report` (the path of `report.json`), and the result lines are added to the test report as a `wireskein` section (shown with `-rA` or on failure).
+
+### When the plugin verifies
+
+- The run is verified after the test body, only if the test recorded a capture or an expectation.
+- A check that fails makes the test fail.
+- A check whose pins were not captured is unchecked and does not fail the test.
+- If the test body already failed, the run is still recorded and verified, but the test's own failure is kept.
+
+### Options
+
+| Option | ini | Default | Meaning |
+| --- | --- | --- | --- |
+| `--wireskein-verify=fail\|report\|off` | `wireskein_verify` | `fail` | `fail`: verify and fail on NG. `report`: verify and write the reports, never fail. `off`: record only |
+
+### Connecting a probe
+
+This plugin knows nothing about probes or targets. A fixture that drives the logic analyzer (for example the one of a board-family plugin) connects to `ws_run` when both are installed:
+
+- right after arming a capture: `t = ws_run.armed()`
+- when the samples are read: `ws_run.capture(data, rate, bits, t, start_us=..., time_base_slipped=True)`. `bits` lists the target's pin names in bit order. Pass `time_base_slipped` only when the probe reports it.
+- the console traffic: `ws_run.command(text)`, `ws_run.reply(text)`
+
+## Development
+
+```sh
+uv sync
+uv run pytest
+```
+
+Until `wireskein` is on PyPI, `pyproject.toml` points uv at the sibling checkout `../wireskein`.
+
+## Release
+
+The release works the same way as in [pytest-embedded-arduino-cli](https://github.com/tanakamasayuki/pytest-embedded-arduino-cli#release). Update `## Unreleased` in `CHANGELOG.md`, then run the `Release` workflow with the version (for example `0.1.0b1`). PyPI publishing uses Trusted Publishing.
+
+## License
+
+MIT
