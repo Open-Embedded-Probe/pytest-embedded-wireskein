@@ -3,6 +3,8 @@
 ## Unreleased
 
 ## 0.0.2
+- (EN) Pins `wireskein==0.0.2`: wireskein 0.0.x may break its API in any release, so each plugin release follows one wireskein release.
+- (JA) `wireskein==0.0.2` に固定する。wireskein は 0.0.x の間どの版でも互換のない変更がありうるので、プラグインのリリースは wireskein の 1 つの版に合わせる。
 - (EN) Requires wireskein 0.0.2: captures are `.wsc` files (each channel at its own rate) and `ws_run.capture(armed, tick_hz, interleaved=..., names=...)` / `capture(armed, tick_hz, channels=[...])`, `ws_run.armed()` returns `time.monotonic()`. The README shows the new calls.
 - (JA) wireskein 0.0.2 が要る。キャプチャは `.wsc`（各チャンネルを自分のレートで持つ）、`ws_run.capture(armed, tick_hz, interleaved=..., names=...)` / `capture(armed, tick_hz, channels=[...])`、`ws_run.armed()` は `time.monotonic()` を返す。README を新しい呼び方にした。
 
