@@ -1,6 +1,8 @@
 # Changelog / 変更履歴
 
 ## Unreleased
+
+## 0.0.2
 - (EN) Requires wireskein 0.0.2: captures are `.wsc` files (each channel at its own rate) and `ws_run.capture(armed, tick_hz, interleaved=..., names=...)` / `capture(armed, tick_hz, channels=[...])`, `ws_run.armed()` returns `time.monotonic()`. The README shows the new calls.
 - (JA) wireskein 0.0.2 が要る。キャプチャは `.wsc`（各チャンネルを自分のレートで持つ）、`ws_run.capture(armed, tick_hz, interleaved=..., names=...)` / `capture(armed, tick_hz, channels=[...])`、`ws_run.armed()` は `time.monotonic()` を返す。README を新しい呼び方にした。
 
