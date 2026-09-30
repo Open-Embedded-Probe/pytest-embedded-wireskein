@@ -1,6 +1,8 @@
 # Changelog / 変更履歴
 
 ## Unreleased
+- (EN) **Breaking:** requires wireskein 0.1.0 (the run format `wireskein-run/3` and check statuses). A check that could not be made fails the test by default: `--wireskein-unchecked=pass` (ini `wireskein_unchecked`) reports it only; measure-only checks never fail. The plugin uses only `Recorder`'s public API (`is_empty`) and the report's `status` fields. Python 3.11 or newer (was 3.13).
+- (JA) **互換のない変更:** wireskein 0.1.0 が要る（記録の形式 `wireskein-run/3` と結果の状態）。検査できなかったものは、既定でテストを失敗にする: `--wireskein-unchecked=pass`（ini `wireskein_unchecked`）で報告だけにできる。測るだけの検査は失敗にしない。プラグインは `Recorder` の公開の API（`is_empty`）と、報告の `status` だけを使う。Python 3.11 以上（以前は 3.13）。
 
 ## 0.0.3
 - (EN) Requires wireskein 0.0.8: captures are `.wireskein` files (was `.wsc`), runs are `wireskein-run/2`, and channels for `ws_run.capture(..., channels=[...])` come from `wireskein.fileformat` (was `wireskein.wsc`). The README shows the new names.

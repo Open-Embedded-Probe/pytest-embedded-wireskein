@@ -8,7 +8,7 @@ version = "0.0.3"
 description = "pytest-embedded plugin: record logic-analyzer captures per test with WireSkein and fail the test when a waveform check fails"
 readme = "README.md"
 license = "MIT"
-requires-python = ">=3.13"
+requires-python = ">=3.11"
 authors = [
   { name = "TANAKA Masayuki" },
 ]
@@ -21,7 +21,7 @@ classifiers = [
 dependencies = [
   "pytest>=8",
   "pytest-embedded>=2.0",
-  "wireskein>=0.0.8",
+  "wireskein>=0.1.0",
 ]
 
 [project.entry-points.pytest11]

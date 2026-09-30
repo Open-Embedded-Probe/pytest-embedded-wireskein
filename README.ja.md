@@ -16,7 +16,7 @@
 pip install pytest-embedded-wireskein
 ```
 
-Python 3.13 以上が要ります。`wireskein` と `pytest-embedded` も一緒に入ります。
+Python 3.11 以上が要ります。`wireskein` と `pytest-embedded` も一緒に入ります。
 
 ## 使い方
 
@@ -74,13 +74,16 @@ report: /tmp/pytest-embedded/2026-09-29_12-00-00-000000/test_pwm/wireskein/repor
 | オプション | ini | 既定 | 意味 |
 | --- | --- | --- | --- |
 | `--wireskein-verify=fail\|report\|off` | `wireskein_verify` | `fail` | `fail`: 照合して、NG なら失敗。`report`: 照合して報告だけ残す（失敗にしない）。`off`: 記録だけ |
+| `--wireskein-unchecked=fail\|pass` | `wireskein_unchecked` | `fail` | 検査できなかったもの（ピンがキャプチャにない、電圧への換算がない、など）。`fail`: 失敗にする（多くは試験の書き間違いか配線の抜けだから）。`pass`: 報告だけ。測るだけと頼んだもの（`uart(baud=None)`）は、どちらでも失敗にしない |
+
+`ws_run` は `wireskein.runlog.Recorder` です。その公開のメソッド（`section`、`heading`、`command`、`reply`、`note`、`armed`、`capture`、`close`、`is_empty`）が、このプラグインの API です。記録の形式と結果の状態は、WireSkein の docs/run-format.ja.md にあります。
 
 ### プローブとのつなぎ方
 
 このプラグインは、プローブもターゲットも知りません。ロジックアナライザを動かす fixture（例: ボードの家系ごとのプラグイン）が、両方入っているときに `ws_run` へつなぎます。
 
 - キャプチャを開始した直後に `t = ws_run.armed()`（`time.monotonic()` の値。キャプチャのクライアントが同じ時計で付けた時刻でもよい）
-- 読み終えたら `ws_run.capture(t, rate, interleaved=data, names=[...], width=8, positions=None, start_us=..., time_base_slipped=True)`
+- 読み終えたら `ws_run.capture(t, rate, interleaved=data, names=[...], width=8, positions=None, start_ns=..., start_uncertainty_ns=..., time_base_slipped=True)`
   - `data` はプローブのサンプルの並び（1 サンプル `width` ビット、チャンネル k はビット `positions[k]`）です。
   - `names` は、チャンネルの順に並べたターゲットのピン名です。
   - `time_base_slipped` は、プローブが報告したときだけ渡します。
