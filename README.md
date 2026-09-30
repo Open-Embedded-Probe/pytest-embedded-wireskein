@@ -12,7 +12,7 @@ Status: **beta**.
 pip install pytest-embedded-wireskein
 ```
 
-Python 3.13 or newer. This installs `wireskein` and `pytest-embedded`.
+Python 3.11 or newer. This installs `wireskein` and `pytest-embedded`.
 
 ## Use
 
@@ -67,13 +67,16 @@ The same directory can be checked again later with `wireskein verify <dir>`. The
 | Option | ini | Default | Meaning |
 | --- | --- | --- | --- |
 | `--wireskein-verify=fail\|report\|off` | `wireskein_verify` | `fail` | `fail`: verify and fail on NG. `report`: verify and write the reports, never fail. `off`: record only |
+| `--wireskein-unchecked=fail\|pass` | `wireskein_unchecked` | `fail` | A check that could not be made (a pin not captured, no volt conversion, ...). `fail`: fails the test, since it is usually a mistake in the test or the wiring. `pass`: reported only. A check asked only to measure (`uart(baud=None)`) never fails |
+
+`ws_run` is a `wireskein.runlog.Recorder`: its public methods (`section`, `heading`, `command`, `reply`, `note`, `armed`, `capture`, `close`, `is_empty`) are this plugin's API. The run format and the result statuses are in WireSkein's docs/run-format.ja.md.
 
 ### Connecting a probe
 
 This plugin knows nothing about probes or targets. A fixture that drives the logic analyzer (for example the one of a board-family plugin) connects to `ws_run` when both are installed:
 
 - right after arming a capture: `t = ws_run.armed()` (`time.monotonic()`; a capture client's own stamp of the same clock works too)
-- when the samples are read: `ws_run.capture(t, rate, interleaved=data, names=[...], width=8, positions=None, start_us=..., time_base_slipped=True)`. `data` is the probe's sample stream (`width` bits per sample, channel k at bit `positions[k]`), `names` the target's pin names in channel order. Pass `time_base_slipped` only when the probe reports it.
+- when the samples are read: `ws_run.capture(t, rate, interleaved=data, names=[...], width=8, positions=None, start_ns=..., start_uncertainty_ns=..., time_base_slipped=True)`. `data` is the probe's sample stream (`width` bits per sample, channel k at bit `positions[k]`), `names` the target's pin names in channel order. Pass `time_base_slipped` only when the probe reports it.
 - channels at different rates: `ws_run.capture(t, tick_hz, channels=[wireskein.fileformat.Channel(name, bits, n, step=...)])`
 - anything else about the capture: `attachments={"probe.json": {...}}`
 - the console traffic: `ws_run.command(text)`, `ws_run.reply(text)`

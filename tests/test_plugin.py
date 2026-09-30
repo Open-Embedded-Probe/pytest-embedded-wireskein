@@ -66,10 +66,24 @@ def test_a_failing_test_body_is_not_overridden(pytester):
     assert (run_dir(logdir, "x") / "report.json").exists()   # still verified and recorded
 
 
-def test_unchecked_does_not_fail(pytester):
+def test_unchecked_fails_by_default(pytester):
     body = TEST_FILE.format(name="x", want=0).replace('level("P0", 0)', 'level("NOT_CAPTURED", 0)')
     result, _ = run(pytester, body=body)
+    result.assert_outcomes(failed=1)
+    result.stdout.fnmatch_lines(["*wireskein: 0 NG, 1 unchecked*", "*--  t  level*NOT_CAPTURED*"])
+
+
+def test_unchecked_can_pass(pytester):
+    body = TEST_FILE.format(name="x", want=0).replace('level("P0", 0)', 'level("NOT_CAPTURED", 0)')
+    result, _ = run(pytester, "--wireskein-unchecked=pass", body=body)
     result.assert_outcomes(passed=1)
+
+
+def test_bad_unchecked_value_is_a_usage_error(pytester):
+    pytester.makeini("[pytest]\nwireskein_unchecked = maybe\n")
+    pytester.makepyfile("def test_x():\n    pass\n")
+    result = pytester.runpytest()
+    assert result.ret == pytest.ExitCode.USAGE_ERROR
 
 
 def test_unused_recorder_writes_no_report(pytester):
