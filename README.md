@@ -49,7 +49,7 @@ The checks (`square`, `level`, `starts`, `ends`, `only_moving`, `pulses`, `i2c`,
 | File | Content |
 | --- | --- |
 | `run.json` | Headings, commands, replies, notes, captures and expectations (WireSkein run format) |
-| `c0001.wsc`, ... | The captures, each channel at its own rate (`wireskein info`, `wireskein convert c0001.wsc c0001.sr` for PulseView) |
+| `c0001.wireskein`, ... | The captures, each channel at its own rate (`wireskein info`, `wireskein convert c0001.wireskein c0001.sr` for PulseView) |
 | `report.json` | Every result with measured values, and the log |
 | `report.xml` | The results as JUnit XML |
 
@@ -74,7 +74,7 @@ This plugin knows nothing about probes or targets. A fixture that drives the log
 
 - right after arming a capture: `t = ws_run.armed()` (`time.monotonic()`; a capture client's own stamp of the same clock works too)
 - when the samples are read: `ws_run.capture(t, rate, interleaved=data, names=[...], width=8, positions=None, start_us=..., time_base_slipped=True)`. `data` is the probe's sample stream (`width` bits per sample, channel k at bit `positions[k]`), `names` the target's pin names in channel order. Pass `time_base_slipped` only when the probe reports it.
-- channels at different rates: `ws_run.capture(t, tick_hz, channels=[wireskein.wsc.Channel(name, bits, n, step=...)])`
+- channels at different rates: `ws_run.capture(t, tick_hz, channels=[wireskein.fileformat.Channel(name, bits, n, step=...)])`
 - anything else about the capture: `attachments={"probe.json": {...}}`
 - the console traffic: `ws_run.command(text)`, `ws_run.reply(text)`
 

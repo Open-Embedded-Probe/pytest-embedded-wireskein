@@ -53,7 +53,7 @@ report: /tmp/pytest-embedded/2026-09-29_12-00-00-000000/test_pwm/wireskein/repor
 | ファイル | 中身 |
 | --- | --- |
 | `run.json` | 見出し、コマンド、応答、メモ、キャプチャ、期待（WireSkein の記録の形式） |
-| `c0001.wsc` など | キャプチャ。各チャンネルを自分のレートで持つ（`wireskein info` で中身、`wireskein convert c0001.wsc c0001.sr` で PulseView 用） |
+| `c0001.wireskein` など | キャプチャ。各チャンネルを自分のレートで持つ（`wireskein info` で中身、`wireskein convert c0001.wireskein c0001.sr` で PulseView 用） |
 | `report.json` | すべての結果と測定値、ログ |
 | `report.xml` | 結果の JUnit XML |
 
@@ -84,7 +84,7 @@ report: /tmp/pytest-embedded/2026-09-29_12-00-00-000000/test_pwm/wireskein/repor
   - `data` はプローブのサンプルの並び（1 サンプル `width` ビット、チャンネル k はビット `positions[k]`）です。
   - `names` は、チャンネルの順に並べたターゲットのピン名です。
   - `time_base_slipped` は、プローブが報告したときだけ渡します。
-- レートの違うチャンネルは `ws_run.capture(t, tick_hz, channels=[wireskein.wsc.Channel(name, bits, n, step=...)])`
+- レートの違うチャンネルは `ws_run.capture(t, tick_hz, channels=[wireskein.fileformat.Channel(name, bits, n, step=...)])`
 - キャプチャについてのほかの情報は `attachments={"probe.json": {...}}`
 - コンソールの送受信は `ws_run.command(text)` と `ws_run.reply(text)`
 
