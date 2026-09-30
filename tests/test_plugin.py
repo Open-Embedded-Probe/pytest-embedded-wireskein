@@ -12,7 +12,7 @@ def test_{name}(ws_run):
         ws_run.command("PING")
         ws_run.reply("PONG")
         t = ws_run.armed()
-        ws_run.capture(bytes(1000), 1e6, ["P0"], t)
+        ws_run.capture(t, 1e6, interleaved=bytes(1000), names=["P0"])
 '''
 
 
@@ -31,7 +31,7 @@ def test_ok_run_is_recorded_next_to_the_dut_log(pytester):
     result, logdir = run(pytester)
     result.assert_outcomes(passed=1)
     d = run_dir(logdir, "x")
-    assert {p.name for p in d.iterdir()} == {"run.json", "c0001.bin", "report.json", "report.xml"}
+    assert {p.name for p in d.iterdir()} == {"run.json", "c0001.wsc", "report.json", "report.xml"}
     doc = json.loads((d / "run.json").read_text())
     assert doc["meta"]["test"].endswith("::test_x")
     assert [e["src"] for e in doc["log"]] == ["marker", "host", "dut", "marker"]
@@ -41,7 +41,7 @@ def test_ok_run_is_recorded_next_to_the_dut_log(pytester):
 def test_ng_fails_the_call_phase(pytester):
     result, logdir = run(pytester, want=1)
     result.assert_outcomes(failed=1)                     # FAILED, not ERROR
-    result.stdout.fnmatch_lines(["*wireskein: 1 NG*", "*NG  t  level  c0001.bin  not constant 1*", "*report: *report.json*"])
+    result.stdout.fnmatch_lines(["*wireskein: 1 NG*", "*NG  t  level  c0001.wsc  not constant 1*", "*report: *report.json*"])
 
 
 def test_report_mode_keeps_the_reports_without_failing(pytester):
@@ -54,7 +54,7 @@ def test_off_mode_only_records(pytester):
     pytester.makeini("[pytest]\nwireskein_verify = off\n")
     result, logdir = run(pytester, want=1)
     result.assert_outcomes(passed=1)
-    assert {p.name for p in run_dir(logdir, "x").iterdir()} == {"run.json", "c0001.bin"}
+    assert {p.name for p in run_dir(logdir, "x").iterdir()} == {"run.json", "c0001.wsc"}
 
 
 def test_a_failing_test_body_is_not_overridden(pytester):
