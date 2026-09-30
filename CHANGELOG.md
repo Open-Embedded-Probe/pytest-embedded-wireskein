@@ -1,6 +1,8 @@
 # Changelog / 変更履歴
 
 ## Unreleased
+- (EN) Requires wireskein 0.0.8: captures are `.wireskein` files (was `.wsc`), runs are `wireskein-run/2`, and channels for `ws_run.capture(..., channels=[...])` come from `wireskein.fileformat` (was `wireskein.wsc`). The README shows the new names.
+- (JA) wireskein 0.0.8 が要る。キャプチャは `.wireskein`（旧 `.wsc`）、記録は `wireskein-run/2`、`ws_run.capture(..., channels=[...])` のチャンネルは `wireskein.fileformat`（旧 `wireskein.wsc`）から作る。README を新しい名前にした。
 
 ## 0.0.2
 - (EN) Requires wireskein 0.0.2: captures are `.wsc` files (each channel at its own rate) and `ws_run.capture(armed, tick_hz, interleaved=..., names=...)` / `capture(armed, tick_hz, channels=[...])`, `ws_run.armed()` returns `time.monotonic()`. The README shows the new calls.

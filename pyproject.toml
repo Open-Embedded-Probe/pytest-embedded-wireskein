@@ -21,7 +21,7 @@ classifiers = [
 dependencies = [
   "pytest>=8",
   "pytest-embedded>=2.0",
-  "wireskein>=0.0.2",
+  "wireskein>=0.0.8",
 ]
 
 [project.entry-points.pytest11]
