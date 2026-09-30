@@ -1,6 +1,8 @@
 # Changelog / 変更履歴
 
 ## Unreleased
+- (EN) Requires wireskein 0.0.2: captures are `.wsc` files (each channel at its own rate) and `ws_run.capture(armed, tick_hz, interleaved=..., names=...)` / `capture(armed, tick_hz, channels=[...])`, `ws_run.armed()` returns `time.monotonic()`. The README shows the new calls.
+- (JA) wireskein 0.0.2 が要る。キャプチャは `.wsc`（各チャンネルを自分のレートで持つ）、`ws_run.capture(armed, tick_hz, interleaved=..., names=...)` / `capture(armed, tick_hz, channels=[...])`、`ws_run.armed()` は `time.monotonic()` を返す。README を新しい呼び方にした。
 
 ## 0.0.1
 - (EN) First beta. The `ws_run` fixture gives each test a `wireskein.runlog.Recorder` writing into `<test_case_tempdir>/wireskein/`, next to `dut.log`. When the test body ends the run is verified: a failing check fails the test in its call phase (FAILED), `report.json` and `report.xml` are written, and the result lines are attached to the test report. `--wireskein-verify` / `wireskein_verify` = `fail` (default), `report` or `off`.
