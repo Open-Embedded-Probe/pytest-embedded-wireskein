@@ -31,9 +31,9 @@ def test_pwm(dut, ws_run, probe):              # probe は、ロジックアナ�
                 ws_run.command(f"PWM {duty}")
                 dut.write(f"PWM {duty}")
                 ws_run.reply(dut.expect(r"PWM duty=\d+").group(0).decode())
-                t = ws_run.armed()               # キャプチャを開始した直後
+                t = ws_run.armed()               # キャプチャを開始した直後の time.monotonic()
                 data, rate = probe.capture()     # bytes。1 サンプル 1 バイト、ビット k がピン k
-                ws_run.capture(data, rate, ["PA1", "PA0"], t)
+                ws_run.capture(t, rate, interleaved=data, names=["PA1", "PA0"])
 ```
 
 `test_pwm` が戻ると、プラグインは記録を閉じて照合します。NG があれば、test は call の段で失敗します（ERROR ではなく FAILED）。
@@ -53,7 +53,7 @@ report: /tmp/pytest-embedded/2026-09-29_12-00-00-000000/test_pwm/wireskein/repor
 | ファイル | 中身 |
 | --- | --- |
 | `run.json` | 見出し、コマンド、応答、メモ、キャプチャ、期待（WireSkein の記録の形式） |
-| `c0001.bin` など | キャプチャ |
+| `c0001.wsc` など | キャプチャ。各チャンネルを自分のレートで持つ（`wireskein info` で中身、`wireskein convert c0001.wsc c0001.sr` で PulseView 用） |
 | `report.json` | すべての結果と測定値、ログ |
 | `report.xml` | 結果の JUnit XML |
 
@@ -79,10 +79,13 @@ report: /tmp/pytest-embedded/2026-09-29_12-00-00-000000/test_pwm/wireskein/repor
 
 このプラグインは、プローブもターゲットも知りません。ロジックアナライザを動かす fixture（例: ボードの家系ごとのプラグイン）が、両方入っているときに `ws_run` へつなぎます。
 
-- キャプチャを開始した直後に `t = ws_run.armed()`
-- 読み終えたら `ws_run.capture(data, rate, bits, t, start_us=..., time_base_slipped=True)`
-  - `bits` は、ビットの順に並べたターゲットのピン名です。
+- キャプチャを開始した直後に `t = ws_run.armed()`（`time.monotonic()` の値。キャプチャのクライアントが同じ時計で付けた時刻でもよい）
+- 読み終えたら `ws_run.capture(t, rate, interleaved=data, names=[...], width=8, positions=None, start_us=..., time_base_slipped=True)`
+  - `data` はプローブのサンプルの並び（1 サンプル `width` ビット、チャンネル k はビット `positions[k]`）です。
+  - `names` は、チャンネルの順に並べたターゲットのピン名です。
   - `time_base_slipped` は、プローブが報告したときだけ渡します。
+- レートの違うチャンネルは `ws_run.capture(t, tick_hz, channels=[wireskein.wsc.Channel(name, bits, n, step=...)])`
+- キャプチャについてのほかの情報は `attachments={"probe.json": {...}}`
 - コンソールの送受信は `ws_run.command(text)` と `ws_run.reply(text)`
 
 ## 開発

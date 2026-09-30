@@ -27,9 +27,9 @@ def test_pwm(dut, ws_run, probe):              # `probe` is whatever drives your
                 ws_run.command(f"PWM {duty}")
                 dut.write(f"PWM {duty}")
                 ws_run.reply(dut.expect(r"PWM duty=\d+").group(0).decode())
-                t = ws_run.armed()               # right after arming the capture
+                t = ws_run.armed()               # time.monotonic() right after arming the capture
                 data, rate = probe.capture()     # bytes, one sample per byte, bit k = pin k
-                ws_run.capture(data, rate, ["PA1", "PA0"], t)
+                ws_run.capture(t, rate, interleaved=data, names=["PA1", "PA0"])
 ```
 
 When `test_pwm` returns, the plugin closes the run and verifies it. If a check fails, the test fails in its call phase (FAILED, not ERROR):
@@ -49,7 +49,7 @@ The checks (`square`, `level`, `starts`, `ends`, `only_moving`, `pulses`, `i2c`,
 | File | Content |
 | --- | --- |
 | `run.json` | Headings, commands, replies, notes, captures and expectations (WireSkein run format) |
-| `c0001.bin`, ... | The captures |
+| `c0001.wsc`, ... | The captures, each channel at its own rate (`wireskein info`, `wireskein convert c0001.wsc c0001.sr` for PulseView) |
 | `report.json` | Every result with measured values, and the log |
 | `report.xml` | The results as JUnit XML |
 
@@ -72,8 +72,10 @@ The same directory can be checked again later with `wireskein verify <dir>`. The
 
 This plugin knows nothing about probes or targets. A fixture that drives the logic analyzer (for example the one of a board-family plugin) connects to `ws_run` when both are installed:
 
-- right after arming a capture: `t = ws_run.armed()`
-- when the samples are read: `ws_run.capture(data, rate, bits, t, start_us=..., time_base_slipped=True)`. `bits` lists the target's pin names in bit order. Pass `time_base_slipped` only when the probe reports it.
+- right after arming a capture: `t = ws_run.armed()` (`time.monotonic()`; a capture client's own stamp of the same clock works too)
+- when the samples are read: `ws_run.capture(t, rate, interleaved=data, names=[...], width=8, positions=None, start_us=..., time_base_slipped=True)`. `data` is the probe's sample stream (`width` bits per sample, channel k at bit `positions[k]`), `names` the target's pin names in channel order. Pass `time_base_slipped` only when the probe reports it.
+- channels at different rates: `ws_run.capture(t, tick_hz, channels=[wireskein.wsc.Channel(name, bits, n, step=...)])`
+- anything else about the capture: `attachments={"probe.json": {...}}`
 - the console traffic: `ws_run.command(text)`, `ws_run.reply(text)`
 
 ## Development
