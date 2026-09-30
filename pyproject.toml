@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "pytest-embedded-wireskein"
-version = "0.0.3"
+version = "0.0.4"
 description = "pytest-embedded plugin: record logic-analyzer captures per test with WireSkein and fail the test when a waveform check fails"
 readme = "README.md"
 license = "MIT"
