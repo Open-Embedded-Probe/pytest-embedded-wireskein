@@ -1,8 +1,6 @@
 # Changelog / 変更履歴
 
 ## Unreleased
-- (EN) Pin `wireskein==0.0.2` (0.0.2 required `>=0.0.2`): wireskein 0.0.x may break its API in any release, so each plugin release follows one wireskein release.
-- (JA) `wireskein==0.0.2` に固定する（0.0.2 は `>=0.0.2` だった）。wireskein は 0.0.x の間どの版でも互換のない変更がありうるので、プラグインのリリースは wireskein の 1 つの版に合わせる。
 
 ## 0.0.2
 - (EN) Requires wireskein 0.0.2: captures are `.wsc` files (each channel at its own rate) and `ws_run.capture(armed, tick_hz, interleaved=..., names=...)` / `capture(armed, tick_hz, channels=[...])`, `ws_run.armed()` returns `time.monotonic()`. The README shows the new calls.
