@@ -102,6 +102,9 @@ def test_bad_mode_is_a_usage_error(pytester):
 
 def test_lines_the_probe_lost_fail_the_test(pytester):
     # nothing captured and no expectations: the loss alone is something to check, and it fails
+    from wireskein.runlog import Recorder
+    if not hasattr(Recorder, "probe_lines"):
+        pytest.skip("needs a wireskein whose Recorder has probe_lines and counts its losses (after 0.0.16)")
     body = 'def test_x(ws_run):\n    ws_run.probe_lines([], lost=["probe log overflowed"])\n'
     result, logdir = run(pytester, body=body)
     result.assert_outcomes(failed=1)
