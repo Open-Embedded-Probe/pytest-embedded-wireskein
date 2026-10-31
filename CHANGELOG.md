@@ -1,6 +1,8 @@
 # Changelog / 変更履歴
 
 ## Unreleased
+- (EN) A test whose run holds only lines the probe lost (or only expectations given by path) is checked and fails, with a wireskein whose `Recorder.is_empty` counts them.
+- (JA) プローブが落とした行だけ（またはパスで与えた期待だけ）の記録も照合し、失敗にする（`Recorder.is_empty` がそれらを数える wireskein で）。
 
 ## 0.0.4
 - (EN) **Breaking:** requires wireskein 0.0.13 (the run format `wireskein-run/3` and check statuses). A check that could not be made fails the test by default: `--wireskein-unchecked=pass` (ini `wireskein_unchecked`) reports it only; measure-only checks never fail. The plugin uses only `Recorder`'s public API (`is_empty`) and the report's `status` fields. Python 3.11 or newer (was 3.13).
