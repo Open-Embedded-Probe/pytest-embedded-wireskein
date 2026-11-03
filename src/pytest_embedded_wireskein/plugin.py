@@ -97,7 +97,14 @@ def _finish(item: pytest.Item, verdict: bool) -> None:
     if mode == "off" or rec.is_empty:
         return
     allow = _allow_unchecked(item.config)
-    report = ws_verify.verify(path.parent)
+    try:
+        report = ws_verify.verify(path.parent)
+    except Exception as e:                 # noqa: BLE001
+        if verdict:
+            raise
+        # the body failed already: its failure stays the test's, the run's trouble goes beside it
+        item.add_report_section("call", "wireskein", f"not verified: {type(e).__name__}: {e}")
+        return
     (path.parent / "report.json").write_text(ws_verify.dumps(report))
     (path.parent / "report.xml").write_text(ws_verify.junit(report, allow))
     item.user_properties.append(("wireskein_report", str(path.parent / "report.json")))

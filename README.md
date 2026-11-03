@@ -27,7 +27,7 @@ def test_pwm(dut, ws_run, probe):              # `probe` is whatever drives your
                 ws_run.command(f"PWM {duty}")
                 dut.write(f"PWM {duty}")
                 ws_run.reply(dut.expect(r"PWM duty=\d+").group(0).decode())
-                t = ws_run.armed()               # time.monotonic() right after arming the capture
+                t = ws_run.armed()               # time.monotonic_ns() right after arming the capture
                 data, rate = probe.capture()     # bytes, one sample per byte, bit k = pin k
                 ws_run.capture(t, rate, interleaved=data, names=["PA1", "PA0"])
 ```
@@ -69,15 +69,16 @@ The same directory can be checked again later with `wireskein verify <dir>`. The
 | `--wireskein-verify=fail\|report\|off` | `wireskein_verify` | `fail` | `fail`: verify and fail on NG. `report`: verify and write the reports, never fail. `off`: record only |
 | `--wireskein-unchecked=fail\|pass` | `wireskein_unchecked` | `fail` | A check that could not be made (a pin not captured, no volt conversion, ...). `fail`: fails the test, since it is usually a mistake in the test or the wiring. `pass`: reported only. A check asked only to measure (`uart(baud=None)`) never fails |
 
-`ws_run` is a `wireskein.runlog.Recorder`: its public methods (`section`, `heading`, `command`, `reply`, `note`, `armed`, `capture`, `close`, `is_empty`) are this plugin's API. The run format and the result statuses are in WireSkein's docs/run-format.ja.md.
+`ws_run` is a `wireskein.runlog.Recorder`: its public methods (`section`, `heading`, `command`, `reply`, `note`, `probe_lines`, `expect`, `now`, `armed`, `capture`, `add`, `close`, `is_empty`) are this plugin's API. The plugin closes it when the test body ends; a record after that (in a fixture's teardown, say) raises, so nothing is silently left out. The run format and the result statuses are in WireSkein's docs/run-format.md.
 
 ### Connecting a probe
 
 This plugin knows nothing about probes or targets. A fixture that drives the logic analyzer (for example the one of a board-family plugin) connects to `ws_run` when both are installed:
 
-- right after arming a capture: `t = ws_run.armed()` (`time.monotonic()`; a capture client's own stamp of the same clock works too)
+- right after arming a capture: `t = ws_run.armed()` (`time.monotonic_ns()`; a capture client's own stamp of the same clock works too)
 - when the samples are read: `ws_run.capture(t, rate, interleaved=data, names=[...], width=8, positions=None, start_ns=..., start_uncertainty_ns=..., time_base_slipped=True)`. `data` is the probe's sample stream (`width` bits per sample, channel k at bit `positions[k]`), `names` the target's pin names in channel order. Pass `time_base_slipped` only when the probe reports it.
-- channels at different rates: `ws_run.capture(t, tick_hz, channels=[wireskein.fileformat.Channel(name, bits, n, step=...)])`
+- channels at different rates: `ws_run.capture(t, tick_hz, channels=[wireskein.capture.Channel(name, bits, n, step=...)])`
+- a whole capture, in parts with what was lost (a stream, a repeat): `ws_run.add(t, cap)` with a `wireskein.capture.Capture` (from an OEP probe on the session the fixture holds: `wireskein.sources.oep.capture_of(acquire.capture(hst, req))`) or a `.wireskein` path
 - anything else about the capture: `attachments={"probe.json": {...}}`
 - the console traffic: `ws_run.command(text)`, `ws_run.reply(text)`
 

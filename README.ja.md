@@ -31,7 +31,7 @@ def test_pwm(dut, ws_run, probe):              # probe は、ロジックアナ�
                 ws_run.command(f"PWM {duty}")
                 dut.write(f"PWM {duty}")
                 ws_run.reply(dut.expect(r"PWM duty=\d+").group(0).decode())
-                t = ws_run.armed()               # キャプチャを開始した直後の time.monotonic()
+                t = ws_run.armed()               # キャプチャを開始した直後の time.monotonic_ns()
                 data, rate = probe.capture()     # bytes。1 サンプル 1 バイト、ビット k がピン k
                 ws_run.capture(t, rate, interleaved=data, names=["PA1", "PA0"])
 ```
@@ -76,18 +76,19 @@ report: /tmp/pytest-embedded/2026-09-29_12-00-00-000000/test_pwm/wireskein/repor
 | `--wireskein-verify=fail\|report\|off` | `wireskein_verify` | `fail` | `fail`: 照合して、NG なら失敗。`report`: 照合して報告だけ残す（失敗にしない）。`off`: 記録だけ |
 | `--wireskein-unchecked=fail\|pass` | `wireskein_unchecked` | `fail` | 検査できなかったもの（ピンがキャプチャにない、電圧への換算がない、など）。`fail`: 失敗にする（多くは試験の書き間違いか配線の抜けだから）。`pass`: 報告だけ。測るだけと頼んだもの（`uart(baud=None)`）は、どちらでも失敗にしない |
 
-`ws_run` は `wireskein.runlog.Recorder` です。その公開のメソッド（`section`、`heading`、`command`、`reply`、`note`、`armed`、`capture`、`close`、`is_empty`）が、このプラグインの API です。記録の形式と結果の状態は、WireSkein の docs/run-format.ja.md にあります。
+`ws_run` は `wireskein.runlog.Recorder` です。その公開のメソッド（`section`、`heading`、`command`、`reply`、`note`、`probe_lines`、`expect`、`now`、`armed`、`capture`、`add`、`close`、`is_empty`）が、このプラグインの API です。プラグインは試験の本体が終わったときに閉じます。その後の記録（fixture の teardown など）は例外になるので、黙って落ちるものはありません。記録の形式と結果の状態は、WireSkein の docs/run-format.ja.md にあります。
 
 ### プローブとのつなぎ方
 
 このプラグインは、プローブもターゲットも知りません。ロジックアナライザを動かす fixture（例: ボードの家系ごとのプラグイン）が、両方入っているときに `ws_run` へつなぎます。
 
-- キャプチャを開始した直後に `t = ws_run.armed()`（`time.monotonic()` の値。キャプチャのクライアントが同じ時計で付けた時刻でもよい）
+- キャプチャを開始した直後に `t = ws_run.armed()`（`time.monotonic_ns()` の値。キャプチャのクライアントが同じ時計で付けた時刻でもよい）
 - 読み終えたら `ws_run.capture(t, rate, interleaved=data, names=[...], width=8, positions=None, start_ns=..., start_uncertainty_ns=..., time_base_slipped=True)`
   - `data` はプローブのサンプルの並び（1 サンプル `width` ビット、チャンネル k はビット `positions[k]`）です。
   - `names` は、チャンネルの順に並べたターゲットのピン名です。
   - `time_base_slipped` は、プローブが報告したときだけ渡します。
-- レートの違うチャンネルは `ws_run.capture(t, tick_hz, channels=[wireskein.fileformat.Channel(name, bits, n, step=...)])`
+- レートの違うチャンネルは `ws_run.capture(t, tick_hz, channels=[wireskein.capture.Channel(name, bits, n, step=...)])`
+- 区間と欠落ごとまとまったキャプチャ（ストリーム、repeat）は `ws_run.add(t, cap)`。`cap` は `wireskein.capture.Capture`（OEP のプローブなら、fixture が持つセッションで `wireskein.sources.oep.capture_of(acquire.capture(hst, req))`）か、`.wireskein` のパス
 - キャプチャについてのほかの情報は `attachments={"probe.json": {...}}`
 - コンソールの送受信は `ws_run.command(text)` と `ws_run.reply(text)`
 

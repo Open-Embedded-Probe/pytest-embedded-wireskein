@@ -109,3 +109,24 @@ def test_lines_the_probe_lost_fail_the_test(pytester):
     result, logdir = run(pytester, body=body)
     result.assert_outcomes(failed=1)
     assert json.loads((run_dir(logdir, "x") / "report.json").read_text())["summary"]["ng"] >= 1
+
+
+def test_a_body_failure_stays_when_the_run_cannot_be_verified(pytester):
+    # the body fails and leaves a run verify cannot read (a capture file gone): the body's failure is the one shown
+    body = (TEST_FILE.format(name="x", want=0)
+            + "        import os; os.remove(ws_run.dir / 'c0001.wireskein')\n"
+            + "        assert False, 'the body failed'\n")
+    result, logdir = run(pytester, body=body)
+    result.assert_outcomes(failed=1)
+    result.stdout.fnmatch_lines(["*the body failed*"])
+
+
+def test_a_record_after_the_body_is_refused_not_lost(pytester):
+    from wireskein.runlog import Recorder
+    if not hasattr(Recorder, "add"):
+        pytest.skip("needs a wireskein whose Recorder refuses records once closed (after 0.0.16)")
+    body = (TEST_FILE.format(name="x", want=0).replace("def test_x(ws_run):", "import pytest\n\n\n@pytest.fixture\n"
+            "def late(ws_run):\n    yield\n    ws_run.note('in teardown')\n\n\ndef test_x(ws_run, late):"))
+    result, _ = run(pytester, body=body)
+    result.assert_outcomes(passed=1, errors=1)                  # the teardown's record raises, visibly
+    result.stdout.fnmatch_lines(["*the run is closed*"])
