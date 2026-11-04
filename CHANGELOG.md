@@ -1,6 +1,8 @@
 # Changelog / 変更履歴
 
 ## Unreleased
+
+## 0.0.5
 - (EN) A test body that fails keeps its failure when the run cannot be verified afterwards (the trouble is a report section beside it). With a wireskein whose Recorder refuses records once closed, a record after the body (a fixture's teardown) raises instead of being left out. `ws_run.add(t, cap)` adds a whole capture (parts, losses); `armed()` is `time.monotonic_ns()` (wireskein-run/1). The README lists `probe_lines`, `expect`, `now` and `add`.
 - (JA) 失敗した試験の本体は、その後に記録を照合できなくても、自分の失敗のままにする（照合できなかったことは、横に報告の節として出す）。閉じた後の記録を断る Recorder の wireskein では、本体の後の記録（fixture の teardown）は、落とされずに例外になる。`ws_run.add(t, cap)` で、まとまったキャプチャ（区間、欠落）を加える。`armed()` は `time.monotonic_ns()`（wireskein-run/1）。README に `probe_lines`、`expect`、`now`、`add` を載せた。
 - (EN) A test whose run holds only lines the probe lost (or only expectations given by path) is checked and fails, with a wireskein whose `Recorder.is_empty` counts them.
