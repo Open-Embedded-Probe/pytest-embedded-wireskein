@@ -39,12 +39,12 @@ def test_pwm(dut, ws_run, probe):              # probe は、ロジックアナ�
 `test_pwm` が戻ると、プラグインは記録を閉じて照合します。NG があれば、test は call の段で失敗します（ERROR ではなく FAILED）。
 
 ```text
-FAILED test_pwm.py::test_pwm - wireskein: 1 NG (5 ok, 1 ng, 0 unchecked (4 segments, 3 captures))
-NG  pwm/duty=128  square  c0002.bin  duty 0.6999 vs 0.5020
+FAILED test_pwm.py::test_pwm - wireskein: 1 NG (4 ok, 1 ng, 0 unchecked, 0 measured (4 segments, 3 captures))
+NG  pwm/duty=128  square  c0002.wireskein  duty 0.6999 vs 0.5020
 report: /tmp/pytest-embedded/2026-09-29_12-00-00-000000/test_pwm/wireskein/report.json
 ```
 
-検査の一覧（`square`、`level`、`starts`、`ends`、`only_moving`、`pulses`、`i2c`、`spi`、`uart`）と見出しの規則は、[WireSkein の README](https://github.com/Open-Embedded-Probe/wireskein/blob/main/README.ja.md) にあります。
+検査と見出しの規則は、[WireSkein の README](https://github.com/Open-Embedded-Probe/wireskein/blob/main/README.ja.md#テストの記録を照合する) にあります。
 
 ### 記録の置き場所
 
@@ -64,9 +64,9 @@ report: /tmp/pytest-embedded/2026-09-29_12-00-00-000000/test_pwm/wireskein/repor
 
 ### 照合する条件
 
-- test が、キャプチャか期待を 1 つでも記録したときだけ照合します。
+- test が、キャプチャ、期待、データの欠落のどれかを記録したときだけ、test の本体の後で照合します（`--wireskein-verify` が `off` なら照合しません）。
 - NG の検査があれば、test を失敗にします。
-- ピンがキャプチャにない検査は未検査で、失敗にはしません。
+- ピンがキャプチャにないなど、検査できなかったものは未検査で、test を失敗にします（`--wireskein-unchecked=pass` なら失敗にしません）。測るだけと頼んだ検査は、失敗にしません。
 - test の本体がすでに失敗していた場合も、記録と照合は行います。ただし、test 自身の失敗の内容はそのまま残します。
 
 ### 設定
@@ -101,7 +101,7 @@ uv run pytest
 
 ## リリース
 
-[pytest-embedded-arduino-cli](https://github.com/tanakamasayuki/pytest-embedded-arduino-cli/blob/main/README.ja.md) と同じ手順です。`CHANGELOG.md` の `## Unreleased` を更新し、`Release` の workflow を版（例 `0.0.2`）を入れて実行します。PyPI への公開は Trusted Publishing で行います。
+[pytest-embedded-arduino-cli](https://github.com/tanakamasayuki/pytest-embedded-arduino-cli/blob/main/README.ja.md) と同じ手順です。`CHANGELOG.md` の `## Unreleased` を更新し、`Release` の workflow を版（`X.Y.Z`）を入れて実行します。PyPI への公開は Trusted Publishing で行います。
 
 ## ライセンス
 

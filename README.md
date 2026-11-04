@@ -35,12 +35,12 @@ def test_pwm(dut, ws_run, probe):              # `probe` is whatever drives your
 When `test_pwm` returns, the plugin closes the run and verifies it. If a check fails, the test fails in its call phase (FAILED, not ERROR):
 
 ```text
-FAILED test_pwm.py::test_pwm - wireskein: 1 NG (5 ok, 1 ng, 0 unchecked (4 segments, 3 captures))
-NG  pwm/duty=128  square  c0002.bin  duty 0.6999 vs 0.5020
+FAILED test_pwm.py::test_pwm - wireskein: 1 NG (4 ok, 1 ng, 0 unchecked, 0 measured (4 segments, 3 captures))
+NG  pwm/duty=128  square  c0002.wireskein  duty 0.6999 vs 0.5020
 report: /tmp/pytest-embedded/2026-09-29_12-00-00-000000/test_pwm/wireskein/report.json
 ```
 
-The checks (`square`, `level`, `starts`, `ends`, `only_moving`, `pulses`, `i2c`, `spi`, `uart`) and the heading rules are described in the [WireSkein README](https://github.com/Open-Embedded-Probe/wireskein#checking-a-test-run).
+The checks and the heading rules are described in the [WireSkein README](https://github.com/Open-Embedded-Probe/wireskein#checking-a-test-run).
 
 ### Where the run is written
 
@@ -57,9 +57,9 @@ The same directory can be checked again later with `wireskein verify <dir>`. The
 
 ### When the plugin verifies
 
-- The run is verified after the test body, only if the test recorded a capture or an expectation.
+- The run is verified after the test body, only if the test recorded a capture, an expectation or lost data, and `--wireskein-verify` is not `off`.
 - A check that fails makes the test fail.
-- A check whose pins were not captured is unchecked and does not fail the test.
+- A check that could not be made (its pins were not captured, ...) is unchecked and fails the test, unless `--wireskein-unchecked=pass`. A check asked only to measure never fails.
 - If the test body already failed, the run is still recorded and verified, but the test's own failure is kept.
 
 ### Options
@@ -91,7 +91,7 @@ uv run pytest
 
 ## Release
 
-The release works the same way as in [pytest-embedded-arduino-cli](https://github.com/tanakamasayuki/pytest-embedded-arduino-cli#release). Update `## Unreleased` in `CHANGELOG.md`, then run the `Release` workflow with the version (for example `0.0.2`). PyPI publishing uses Trusted Publishing.
+The release works the same way as in [pytest-embedded-arduino-cli](https://github.com/tanakamasayuki/pytest-embedded-arduino-cli#release). Update `## Unreleased` in `CHANGELOG.md`, then run the `Release` workflow with the version (`X.Y.Z`). PyPI publishing uses Trusted Publishing.
 
 ## License
 
