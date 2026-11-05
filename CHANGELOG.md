@@ -1,6 +1,8 @@
 # Changelog / 変更履歴
 
 ## Unreleased
+
+## 0.0.6
 - (EN) **Breaking:** the checks' JUnit XML is `report.junit` (was `report.xml`). pytest-embedded merges every `.xml` under its session's log directory as a DUT's unity report, so with `--junitxml` the session ended with an error ("Could't find test case wireskein") after the tests had passed.
 - (JA) **互換のない変更:** 検査の JUnit XML は `report.junit`（前は `report.xml`）。pytest-embedded は session のログのディレクトリの `.xml` をすべて DUT の unity の報告として取り込むので、`--junitxml` を付けると、試験が通った後に session がエラー（"Could't find test case wireskein"）で終わっていた。
 
