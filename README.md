@@ -53,7 +53,7 @@ The checks and the heading rules are described in the [WireSkein README](https:/
 | `report.json` | Every result with measured values, and the log |
 | `report.junit` | The results as JUnit XML (not named `.xml`: pytest-embedded takes every `.xml` in its log directory for a DUT's report) |
 
-The same directory can be checked again later with `wireskein verify <dir>`. The test's `user_properties` carry `wireskein_report` (the path of `report.json`), and the result lines are added to the test report as a `wireskein` section (shown with `-rA` or on failure).
+The same directory can be checked again later with `wireskein verify <dir>`. Verification also writes what the checks found into the captures' markers - every notice, and every change `becomes` found - so `wireskein gui` shows each on the waveform; the result lines list the notices under their checks. The test's `user_properties` carry `wireskein_report` (the path of `report.json`), and the result lines are added to the test report as a `wireskein` section (shown with `-rA` or on failure).
 
 ### When the plugin verifies
 

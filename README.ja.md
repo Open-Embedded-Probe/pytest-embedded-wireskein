@@ -57,7 +57,7 @@ report: /tmp/pytest-embedded/2026-09-29_12-00-00-000000/test_pwm/wireskein/repor
 | `report.json` | すべての結果と測定値、ログ |
 | `report.junit` | 結果の JUnit XML（名前は `.xml` にしない: pytest-embedded は、ログのディレクトリの `.xml` をすべて DUT の報告として取り込むため） |
 
-同じディレクトリは、後から `wireskein verify <ディレクトリ>` で照合し直せます。
+同じディレクトリは、後から `wireskein verify <ディレクトリ>` で照合し直せます。照合は、検査が見つけたもの（すべての注意と、`becomes` が見つけた変化点）をキャプチャのマーカーにも書くので、`wireskein gui` で波形の上に 1 つずつ見えます。結果の行には、注意も検査の下に並びます。
 
 - test の `user_properties` には、`wireskein_report`（`report.json` のパス）が入ります。
 - 結果の行は、test の報告に `wireskein` の節として付きます（`-rA` や失敗のときに表示されます）。

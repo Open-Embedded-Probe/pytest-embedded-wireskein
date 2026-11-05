@@ -1,6 +1,8 @@
 # Changelog / 変更履歴
 
 ## Unreleased
+- (EN) Requires wireskein 0.0.21: verification writes the notices and the changes `becomes` found into the captures' markers (`verify(..., mark=True)`), and the report section lists the notices under their checks.
+- (JA) wireskein 0.0.21 が要る: 照合は、注意と `becomes` が見つけた変化点をキャプチャのマーカーに書く（`verify(..., mark=True)`）。報告の節には、注意を検査の下に並べる。
 
 ## 0.0.6
 - (EN) **Breaking:** the checks' JUnit XML is `report.junit` (was `report.xml`). pytest-embedded merges every `.xml` under its session's log directory as a DUT's unity report, so with `--junitxml` the session ended with an error ("Could't find test case wireskein") after the tests had passed.

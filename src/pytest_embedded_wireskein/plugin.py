@@ -98,7 +98,7 @@ def _finish(item: pytest.Item, verdict: bool) -> None:
         return
     allow = _allow_unchecked(item.config)
     try:
-        report = ws_verify.verify(path.parent)
+        report = ws_verify.verify(path.parent, mark=True)   # notices and changes found go into the captures' markers
     except Exception as e:                 # noqa: BLE001
         if verdict:
             raise
@@ -109,7 +109,8 @@ def _finish(item: pytest.Item, verdict: bool) -> None:
     # JUnit XML, not named .xml: pytest-embedded merges every .xml under its session tempdir as a DUT's unity report
     (path.parent / "report.junit").write_text(ws_verify.junit(report, allow))
     item.user_properties.append(("wireskein_report", str(path.parent / "report.json")))
-    text = "\n".join([ws_verify.summary_line(report), *ws_verify.lines(report), f"report: {path.parent / 'report.json'}"])
+    text = "\n".join([ws_verify.summary_line(report), *ws_verify.lines(report, notices=True),
+                      f"report: {path.parent / 'report.json'}"])
     item.add_report_section("call", "wireskein", text)
     if verdict and mode == "fail" and ws_verify.failed(report, allow):
         bad = [r for r in report["results"] if r["status"] == "ng" or (r["status"] == "unchecked" and not allow)]

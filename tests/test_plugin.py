@@ -139,3 +139,23 @@ def test_a_record_after_the_body_is_refused_not_lost(pytester):
     result, _ = run(pytester, body=body)
     result.assert_outcomes(passed=1, errors=1)                  # the teardown's record raises, visibly
     result.stdout.fnmatch_lines(["*the run is closed*"])
+
+
+def test_the_changes_found_are_marked_in_the_capture(pytester):
+    # a segment where P0 starts a wave: becomes finds the change, and verify marks it in the capture
+    body = '''
+import numpy as np
+from wireskein.runlog import becomes
+
+def test_m(ws_run):
+    lv = np.zeros(4000, np.uint8)
+    for a in range(1000, 4000, 100):
+        lv[a:a + 50] = 1
+    with ws_run.section(1, "t", expect=[becomes("P0", freq_hz=10_000, duty=0.5)]):
+        ws_run.capture(ws_run.armed(), 1e6, interleaved=lv.tobytes(), names=["P0"])
+'''
+    result, logdir = run(pytester, body=body, name="m")
+    result.assert_outcomes(passed=1)
+    from wireskein import _fileformat as ff
+    marks = ff.markers(run_dir(logdir, "m") / "c0001.wireskein")
+    assert [(m["t"], m["label"], m["by"]) for m in marks] == [(1000, "change: t", "verify")]
