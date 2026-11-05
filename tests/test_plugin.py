@@ -31,11 +31,20 @@ def test_ok_run_is_recorded_next_to_the_dut_log(pytester):
     result, logdir = run(pytester)
     result.assert_outcomes(passed=1)
     d = run_dir(logdir, "x")
-    assert {p.name for p in d.iterdir()} == {"run.json", "c0001.wireskein", "report.json", "report.xml"}
+    assert {p.name for p in d.iterdir()} == {"run.json", "c0001.wireskein", "report.json", "report.junit"}
     doc = json.loads((d / "run.json").read_text())
     assert doc["meta"]["test"].endswith("::test_x")
     assert [e["src"] for e in doc["log"]] == ["marker", "host", "dut", "marker"]
     assert json.loads((d / "report.json").read_text())["summary"]["ok"] == 1
+
+
+def test_junitxml_session_ends_cleanly(pytester):
+    # pytest-embedded merges every .xml under its session tempdir as a DUT's unity report: the JUnit of the
+    # checks must not end in .xml, or the session ends with an error after the tests passed
+    result, logdir = run(pytester, "--junitxml", str(pytester.path / "junit.xml"))
+    result.assert_outcomes(passed=1)
+    assert result.ret == 0, result.stdout.str()
+    assert "<testsuite" in (run_dir(logdir, "x") / "report.junit").read_text()
 
 
 def test_ng_fails_the_call_phase(pytester):

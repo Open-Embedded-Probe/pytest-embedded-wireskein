@@ -51,7 +51,7 @@ The checks and the heading rules are described in the [WireSkein README](https:/
 | `run.json` | Headings, commands, replies, notes, captures and expectations (WireSkein run format) |
 | `c0001.wireskein`, ... | The captures, each channel at its own rate (`wireskein info`, `wireskein convert c0001.wireskein c0001.sr` for PulseView) |
 | `report.json` | Every result with measured values, and the log |
-| `report.xml` | The results as JUnit XML |
+| `report.junit` | The results as JUnit XML (not named `.xml`: pytest-embedded takes every `.xml` in its log directory for a DUT's report) |
 
 The same directory can be checked again later with `wireskein verify <dir>`. The test's `user_properties` carry `wireskein_report` (the path of `report.json`), and the result lines are added to the test report as a `wireskein` section (shown with `-rA` or on failure).
 

@@ -2,7 +2,7 @@
 
 The run is written next to pytest-embedded's dut.log, in
 <test_case_tempdir>/wireskein/ (run.json, the captures, report.json,
-report.xml). A failing check fails the test in its call phase, so pytest
+report.junit). A failing check fails the test in its call phase, so pytest
 reports FAILED, not ERROR. The plugin knows nothing about the probe or the
 target: whatever fixture drives the probe feeds `ws_run` (armed / capture /
 command / reply).
@@ -106,7 +106,8 @@ def _finish(item: pytest.Item, verdict: bool) -> None:
         item.add_report_section("call", "wireskein", f"not verified: {type(e).__name__}: {e}")
         return
     (path.parent / "report.json").write_text(ws_verify.dumps(report))
-    (path.parent / "report.xml").write_text(ws_verify.junit(report, allow))
+    # JUnit XML, not named .xml: pytest-embedded merges every .xml under its session tempdir as a DUT's unity report
+    (path.parent / "report.junit").write_text(ws_verify.junit(report, allow))
     item.user_properties.append(("wireskein_report", str(path.parent / "report.json")))
     text = "\n".join([ws_verify.summary_line(report), *ws_verify.lines(report), f"report: {path.parent / 'report.json'}"])
     item.add_report_section("call", "wireskein", text)

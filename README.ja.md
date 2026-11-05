@@ -55,7 +55,7 @@ report: /tmp/pytest-embedded/2026-09-29_12-00-00-000000/test_pwm/wireskein/repor
 | `run.json` | 見出し、コマンド、応答、メモ、キャプチャ、期待（WireSkein の記録の形式） |
 | `c0001.wireskein` など | キャプチャ。各チャンネルを自分のレートで持つ（`wireskein info` で中身、`wireskein convert c0001.wireskein c0001.sr` で PulseView 用） |
 | `report.json` | すべての結果と測定値、ログ |
-| `report.xml` | 結果の JUnit XML |
+| `report.junit` | 結果の JUnit XML（名前は `.xml` にしない: pytest-embedded は、ログのディレクトリの `.xml` をすべて DUT の報告として取り込むため） |
 
 同じディレクトリは、後から `wireskein verify <ディレクトリ>` で照合し直せます。
 

@@ -1,6 +1,8 @@
 # Changelog / 変更履歴
 
 ## Unreleased
+- (EN) **Breaking:** the checks' JUnit XML is `report.junit` (was `report.xml`). pytest-embedded merges every `.xml` under its session's log directory as a DUT's unity report, so with `--junitxml` the session ended with an error ("Could't find test case wireskein") after the tests had passed.
+- (JA) **互換のない変更:** 検査の JUnit XML は `report.junit`（前は `report.xml`）。pytest-embedded は session のログのディレクトリの `.xml` をすべて DUT の unity の報告として取り込むので、`--junitxml` を付けると、試験が通った後に session がエラー（"Could't find test case wireskein"）で終わっていた。
 
 ## 0.0.5
 - (EN) A test body that fails keeps its failure when the run cannot be verified afterwards (the trouble is a report section beside it). With a wireskein whose Recorder refuses records once closed, a record after the body (a fixture's teardown) raises instead of being left out. `ws_run.add(t, cap)` adds a whole capture (parts, losses); `armed()` is `time.monotonic_ns()` (wireskein-run/1). The README lists `probe_lines`, `expect`, `now` and `add`.
