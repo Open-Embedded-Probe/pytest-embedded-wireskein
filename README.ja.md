@@ -101,7 +101,7 @@ uv run pytest
 
 ## リリース
 
-[pytest-embedded-arduino-cli](https://github.com/tanakamasayuki/pytest-embedded-arduino-cli/blob/main/README.ja.md) と同じ手順です。`CHANGELOG.md` の `## Unreleased` を更新し、`Release` の workflow を版（`X.Y.Z`）を入れて実行します。PyPI への公開は Trusted Publishing で行います。
+[pytest-embedded-arduino-cli](https://github.com/tanakamasayuki/pytest-embedded-arduino-cli/blob/main/README.ja.md#リリース方法) と同じ手順です。`CHANGELOG.md` の `## Unreleased` を更新し、`Release` の workflow を版（`X.Y.Z`）を入れて実行します。PyPI への公開は Trusted Publishing で行います。
 
 ## ライセンス
 
