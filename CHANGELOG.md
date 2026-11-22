@@ -1,6 +1,8 @@
 # Changelog / 変更履歴
 
 ## Unreleased
+- (EN) Requires wireskein 0.0.22: the tests read a capture's markers through the public `wireskein.capture.markers`, not the internal `wireskein._fileformat`.
+- (JA) wireskein 0.0.22 が要る: 試験は、キャプチャのマーカーを内部の `wireskein._fileformat` ではなく、公開の `wireskein.capture.markers` で読む。
 
 ## 0.0.7
 - (EN) Requires wireskein 0.0.21: verification writes the notices and the changes `becomes` found into the captures' markers (`verify(..., mark=True)`), and the report section lists the notices under their checks.

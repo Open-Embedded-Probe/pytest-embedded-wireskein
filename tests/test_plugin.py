@@ -156,6 +156,6 @@ def test_m(ws_run):
 '''
     result, logdir = run(pytester, body=body, name="m")
     result.assert_outcomes(passed=1)
-    from wireskein import _fileformat as ff
-    marks = ff.markers(run_dir(logdir, "m") / "c0001.wireskein")
+    from wireskein import capture
+    marks = capture.markers(run_dir(logdir, "m") / "c0001.wireskein")
     assert [(m["t"], m["label"], m["by"]) for m in marks] == [(1000, "change: t", "verify")]
